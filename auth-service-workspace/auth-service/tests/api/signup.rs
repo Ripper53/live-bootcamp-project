@@ -1,4 +1,4 @@
-use auth_service_core::requests::{Password, SignupEndpointRequest, TwoFactorAuthentication};
+use auth_service_core::requests::{SignupEndpointRequest, TwoFactorAuthentication};
 
 use crate::utilities::{get_random_email, get_random_password, TestApp};
 

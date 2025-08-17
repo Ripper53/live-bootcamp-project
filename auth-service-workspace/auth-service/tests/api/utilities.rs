@@ -1,5 +1,3 @@
-use std::collections::{HashMap, HashSet};
-
 use auth_service::Application;
 use auth_service_core::requests::{
     Email, LoginEndpointRequest, LogoutEndpointRequest, Password, SignupEndpointRequest,

@@ -1,4 +1,4 @@
-use axum::{http::StatusCode, response::IntoResponse, routing::post, serve::Serve, Router};
+use axum::{routing::post, serve::Serve, Router};
 use tower_http::services::ServeDir;
 
 pub mod routes;
