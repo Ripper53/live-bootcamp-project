@@ -91,7 +91,7 @@ jobs:
       env:
         DROPLET_SSH_KEY: ${{ secrets.DROPLET_SSH_KEY }}
       run: |
-        echo "$DROPLET_SSH_KEY" > private_key.pem
+        echo "${DROPLET_SSH_KEY}" > private_key.pem
         chmod 600 private_key.pem
         scp -i private_key.pem compose.yml root@${{ secrets.DROPLET_HOST }}:~
         rm -f private_key.pem
@@ -101,7 +101,7 @@ jobs:
       with:
         host: ${{ secrets.DROPLET_HOST }}
         username: root
-        password: ${{ secrets.DROPLET_PASSWORD }}
+        key: ${{ secrets.DROPLET_SSH_KEY }}
         script: |
           cd ~
           export AUTH_SERVICE_IP=${{ secrets.DROPLET_HOST }}
