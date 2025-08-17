@@ -23,8 +23,8 @@ jobs:
         path: |
           app-service/.cargo
           app-service/target/
-          auth-service/.cargo
-          auth-service/target/
+          auth-service-workspace/.cargo
+          auth-service-workspace/target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: ${{ runner.os }}-cargo-
 
@@ -38,7 +38,7 @@ jobs:
         cargo test --verbose
 
     - name: Build and test auth-service code
-      working-directory: ./auth-service
+      working-directory: ./auth-service-workspace
       run: |
         cargo build --verbose
         cargo test --verbose
@@ -108,4 +108,3 @@ jobs:
           docker compose down
           docker compose pull
           docker compose up -d
-
