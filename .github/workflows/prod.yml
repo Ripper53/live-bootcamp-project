@@ -105,6 +105,7 @@ jobs:
         host: ${{ secrets.DROPLET_HOST }}
         username: root
         key: ${{ secrets.DROPLET_SSH_KEY }}
+        passphrase: ${{ secrets.DROPLET_PASSWORD }}
         script: |
           cd ~
           export AUTH_SERVICE_IP=${{ secrets.DROPLET_HOST }}
