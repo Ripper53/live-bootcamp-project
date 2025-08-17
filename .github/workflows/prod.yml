@@ -94,6 +94,7 @@ jobs:
       run: |
         echo "${DROPLET_SSH_KEY}" > private_key.pem
         chmod 600 private_key.pem
+        eval "$(ssh-agent -s)"
         ssh-add private_key.pem <<< "$DROPLET_SSH_KEY_PASSPHRASE"
         scp compose.yml root@${{ secrets.DROPLET_HOST }}:~
         rm -f private_key.pem
