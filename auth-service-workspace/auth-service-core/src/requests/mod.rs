@@ -10,11 +10,25 @@ pub use signup::*;
 pub use verify_2fa::*;
 pub use verify_token::*;
 
-#[derive(serde::Serialize, serde::Deserialize, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Hash, PartialEq, Eq, Clone, Debug)]
 pub struct Email(String);
 impl Email {
     pub fn new(email: String) -> Self {
         Email(email)
+    }
+}
+impl std::fmt::Display for Email {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some((a, b)) = self.0.split_once('@')
+            && let Some(a) = a.chars().next()
+            && let Some((b, c)) = b.split_once('.')
+            && let Some(b) = b.chars().next()
+            && let Some(c) = c.chars().next()
+        {
+            write!(f, "{a}***@{b}***.{c}**")
+        } else {
+            write!(f, "****@****.***")
+        }
     }
 }
 

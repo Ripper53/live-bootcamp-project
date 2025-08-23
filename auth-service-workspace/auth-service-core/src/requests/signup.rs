@@ -8,7 +8,7 @@ pub struct SignupEndpointRequest {
     pub two_factor_authentication: TwoFactorAuthentication,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum TwoFactorAuthentication {
     Disabled,
     Required,

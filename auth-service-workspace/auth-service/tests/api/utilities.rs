@@ -1,8 +1,11 @@
-use auth_service::Application;
+use std::sync::Arc;
+
+use auth_service::{app_state::AppState, services::user_store::HashMapUserStore, Application};
 use auth_service_core::requests::{
     Email, LoginEndpointRequest, LogoutEndpointRequest, Password, SignupEndpointRequest,
     VerifyTokenEndpointRequest, VerifyTwoFactorAuthenticationEndpointRequest,
 };
+use tokio::sync::RwLock;
 
 pub struct TestApp {
     pub address: String,
@@ -11,9 +14,12 @@ pub struct TestApp {
 
 impl TestApp {
     pub async fn new() -> Self {
-        let app = Application::build("127.0.0.1:0")
-            .await
-            .expect("Failed to build app");
+        let app = Application::build(
+            AppState::new(Arc::new(RwLock::new(Box::new(HashMapUserStore::default())))),
+            "127.0.0.1:0",
+        )
+        .await
+        .expect("Failed to build app");
 
         let address = format!("http://{}", app.address());
 

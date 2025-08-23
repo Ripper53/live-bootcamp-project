@@ -1,6 +1,35 @@
-use auth_service_core::requests::SignupEndpointRequest;
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use auth_service_core::{
+    requests::SignupEndpointRequest, responses::signup::SignupEndpointResponse,
+};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 
-pub async fn signup(Json(request): Json<SignupEndpointRequest>) -> impl IntoResponse {
-    StatusCode::OK.into_response()
+use crate::{app_state::AppState, domain::user::User};
+
+pub async fn signup(
+    State(state): State<AppState>,
+    Json(request): Json<SignupEndpointRequest>,
+) -> impl IntoResponse {
+    let user = User::new(
+        request.email,
+        request.password,
+        request.two_factor_authentication,
+    );
+    let mut user_store = state.user_store.write().await;
+    match user_store.add_user(user) {
+        Ok(()) => (
+            StatusCode::CREATED,
+            Json(SignupEndpointResponse {
+                message: "User created successfully!".into(),
+            }),
+        ),
+        Err(e) => {
+            // TODO: send json reply with error info
+            (
+                StatusCode::CONFLICT,
+                Json(SignupEndpointResponse {
+                    message: "User creation failure!".into(),
+                }),
+            )
+        }
+    }
 }
