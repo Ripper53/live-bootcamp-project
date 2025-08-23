@@ -83,7 +83,7 @@ impl TestApp {
 }
 
 pub fn get_random_email() -> Email {
-    Email::new(format!("{}@email.com", uuid::Uuid::new_v4()))
+    Email::try_new(format!("{}@email.com", uuid::Uuid::new_v4())).unwrap()
 }
 
 pub fn get_random_password() -> Password {

@@ -15,7 +15,7 @@ pub struct HashMapUserStore {
 impl UserStore for HashMapUserStore {
     fn add_user(&mut self, user: User) -> Result<(), UserStoreAddUserError> {
         if self.users.contains_key(user.email()) {
-            Err(UserStoreAddUserError::UserAlreadyExists(user))
+            Err(UserStoreAddUserError::UserEmailAlreadyInUse(user))
         } else {
             self.users.insert(user.email().clone(), user);
             Ok(())

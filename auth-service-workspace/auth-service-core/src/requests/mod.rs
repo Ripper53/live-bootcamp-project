@@ -1,3 +1,5 @@
+use email_address::EmailAddress;
+
 mod login;
 mod logout;
 mod signup;
@@ -10,11 +12,45 @@ pub use signup::*;
 pub use verify_2fa::*;
 pub use verify_token::*;
 
-#[derive(serde::Serialize, serde::Deserialize, Hash, PartialEq, Eq, Clone, Debug)]
+#[derive(serde::Serialize, Hash, PartialEq, Eq, Clone, Debug)]
 pub struct Email(String);
 impl Email {
-    pub fn new(email: String) -> Self {
-        Email(email)
+    pub fn try_new(email: String) -> Result<Self, InvalidEmailError> {
+        if EmailAddress::is_valid(&email) {
+            Ok(Email(email))
+        } else {
+            Err(InvalidEmailError(email))
+        }
+    }
+}
+#[derive(thiserror::Error, Debug)]
+#[error("{0} is not a valid email")]
+pub struct InvalidEmailError(String);
+impl<'de> serde::Deserialize<'de> for Email {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct EmailVisitor;
+        impl<'de> serde::de::Visitor<'de> for EmailVisitor {
+            type Value = Email;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("an integer between 0 and 100")
+            }
+
+            fn visit_string<E>(self, sus_email: String) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                match Email::try_new(sus_email) {
+                    Ok(email) => Ok(email),
+                    Err(e) => Err(E::custom(e)),
+                }
+            }
+        }
+        let sus_email = String::deserialize(deserializer)?;
+        serde::de::Visitor::visit_string(EmailVisitor, sus_email)
     }
 }
 impl std::fmt::Display for Email {

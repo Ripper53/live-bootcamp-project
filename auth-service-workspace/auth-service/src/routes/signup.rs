@@ -3,7 +3,7 @@ use auth_service_core::{
 };
 use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 
-use crate::{app_state::AppState, domain::user::User};
+use crate::{app_state::AppState, domain::user::User, services::user_store::UserStoreAddUserError};
 
 pub async fn signup(
     State(state): State<AppState>,
@@ -22,14 +22,13 @@ pub async fn signup(
                 message: "User created successfully!".into(),
             }),
         ),
-        Err(e) => {
-            // TODO: send json reply with error info
-            (
+        Err(e) => match e {
+            UserStoreAddUserError::UserEmailAlreadyInUse(_) => (
                 StatusCode::CONFLICT,
                 Json(SignupEndpointResponse {
-                    message: "User creation failure!".into(),
+                    message: e.to_string(),
                 }),
-            )
-        }
+            ),
+        },
     }
 }

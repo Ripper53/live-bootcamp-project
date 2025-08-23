@@ -9,8 +9,8 @@ pub trait UserStore {
 
 #[derive(thiserror::Error, Debug)]
 pub enum UserStoreAddUserError {
-    #[error("user {0} already exists")]
-    UserAlreadyExists(User),
+    #[error("email already in use")]
+    UserEmailAlreadyInUse(User),
 }
 
 #[cfg(test)]
