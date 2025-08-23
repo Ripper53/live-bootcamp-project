@@ -1,12 +1,25 @@
-use crate::requests::Email;
+use crate::requests::{UncheckedEmail, ValidEmail};
 
 #[derive(serde::Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct VerifyTwoFactorAuthenticationEndpointRequest {
-    pub email: Email,
-    pub login_attempt_id: LoginAttemptID,
+    email: UncheckedEmail,
+    login_attempt_id: LoginAttemptID,
     #[serde(rename = "2FACode")]
-    pub two_factor_authentication_code: TwoFactorAuthenticationCode,
+    two_factor_authentication_code: TwoFactorAuthenticationCode,
+}
+impl VerifyTwoFactorAuthenticationEndpointRequest {
+    pub fn new(
+        email: ValidEmail,
+        login_attempt_id: LoginAttemptID,
+        two_factor_authentication_code: TwoFactorAuthenticationCode,
+    ) -> Self {
+        VerifyTwoFactorAuthenticationEndpointRequest {
+            email: email.into(),
+            login_attempt_id,
+            two_factor_authentication_code,
+        }
+    }
 }
 
 #[derive(serde::Serialize)]

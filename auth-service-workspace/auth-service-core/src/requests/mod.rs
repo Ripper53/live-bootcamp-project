@@ -12,12 +12,24 @@ pub use signup::*;
 pub use verify_2fa::*;
 pub use verify_token::*;
 
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
+pub struct UncheckedEmail(String);
+impl UncheckedEmail {
+    pub fn validate(self) -> Result<ValidEmail, InvalidEmailError> {
+        ValidEmail::try_new(self.0)
+    }
+}
+impl From<ValidEmail> for UncheckedEmail {
+    fn from(email: ValidEmail) -> Self {
+        UncheckedEmail(email.0)
+    }
+}
 #[derive(serde::Serialize, Hash, PartialEq, Eq, Clone, Debug)]
-pub struct Email(String);
-impl Email {
+pub struct ValidEmail(String);
+impl ValidEmail {
     pub fn try_new(email: String) -> Result<Self, InvalidEmailError> {
         if EmailAddress::is_valid(&email) {
-            Ok(Email(email))
+            Ok(ValidEmail(email))
         } else {
             Err(InvalidEmailError(email))
         }
@@ -26,45 +38,26 @@ impl Email {
 #[derive(thiserror::Error, Debug)]
 #[error("{0} is not a valid email")]
 pub struct InvalidEmailError(String);
-impl<'de> serde::Deserialize<'de> for Email {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        struct EmailVisitor;
-        impl<'de> serde::de::Visitor<'de> for EmailVisitor {
-            type Value = Email;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("an integer between 0 and 100")
-            }
-
-            fn visit_string<E>(self, sus_email: String) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                match Email::try_new(sus_email) {
-                    Ok(email) => Ok(email),
-                    Err(e) => Err(E::custom(e)),
-                }
-            }
-        }
-        let sus_email = String::deserialize(deserializer)?;
-        serde::de::Visitor::visit_string(EmailVisitor, sus_email)
+impl std::fmt::Display for ValidEmail {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        fmt_email(&self.0, f)
     }
 }
-impl std::fmt::Display for Email {
+impl std::fmt::Display for UncheckedEmail {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some((a, b)) = self.0.split_once('@')
-            && let Some(a) = a.chars().next()
-            && let Some((b, c)) = b.split_once('.')
-            && let Some(b) = b.chars().next()
-            && let Some(c) = c.chars().next()
-        {
-            write!(f, "{a}***@{b}***.{c}**")
-        } else {
-            write!(f, "****@****.***")
-        }
+        fmt_email(&self.0, f)
+    }
+}
+fn fmt_email(email: &str, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    if let Some((a, b)) = email.split_once('@')
+        && let Some(a) = a.chars().next()
+        && let Some((b, c)) = b.split_once('.')
+        && let Some(b) = b.chars().next()
+        && let Some(c) = c.chars().next()
+    {
+        write!(f, "{a}***@{b}***.{c}**")
+    } else {
+        write!(f, "****@****.***")
     }
 }
 

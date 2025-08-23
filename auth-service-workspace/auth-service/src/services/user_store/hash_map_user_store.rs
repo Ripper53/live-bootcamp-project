@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use auth_service_core::requests::Email;
+use auth_service_core::requests::ValidEmail;
 
 use crate::{
     domain::user::User,
@@ -9,7 +9,7 @@ use crate::{
 
 #[derive(Default)]
 pub struct HashMapUserStore {
-    users: HashMap<Email, User>,
+    users: HashMap<ValidEmail, User>,
 }
 
 impl UserStore for HashMapUserStore {

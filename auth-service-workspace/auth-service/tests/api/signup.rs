@@ -24,7 +24,7 @@ async fn signup_returns_201_and_json_if_valid_input() {
         .json::<SignupEndpointResponse>()
         .await
         .expect("Failed to deserialize response body to SignupEndpointResponse");
-    assert_eq!("User created successfully!", response.message);
+    assert_eq!("user created successfully", response.message);
 }
 
 #[tokio::test]

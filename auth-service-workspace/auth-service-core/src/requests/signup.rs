@@ -1,11 +1,31 @@
-use crate::requests::{Email, Password};
+use crate::requests::{Password, UncheckedEmail, ValidEmail};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct SignupEndpointRequest {
-    pub email: Email,
-    pub password: Password,
+    email: UncheckedEmail,
+    password: Password,
     #[serde(rename = "2fa")]
-    pub two_factor_authentication: TwoFactorAuthentication,
+    two_factor_authentication: TwoFactorAuthentication,
+}
+
+impl SignupEndpointRequest {
+    pub fn new(
+        email: ValidEmail,
+        password: Password,
+        two_factor_authentication: TwoFactorAuthentication,
+    ) -> Self {
+        SignupEndpointRequest {
+            email: email.into(),
+            password,
+            two_factor_authentication,
+        }
+    }
+}
+
+impl SignupEndpointRequest {
+    pub fn take_all(self) -> (UncheckedEmail, Password, TwoFactorAuthentication) {
+        (self.email, self.password, self.two_factor_authentication)
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
