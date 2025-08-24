@@ -1,4 +1,4 @@
-use crate::requests::{UncheckedEmail, ValidEmail};
+use crate::domain::{UncheckedEmail, ValidEmail};
 
 #[derive(serde::Serialize, Debug)]
 #[serde(rename_all = "camelCase")]

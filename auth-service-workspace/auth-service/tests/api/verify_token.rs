@@ -1,4 +1,4 @@
-use auth_service_core::requests::{Token, VerifyTokenEndpointRequest};
+use auth_service_core::{domain::Token, requests::VerifyTokenEndpointRequest};
 
 use crate::utilities::TestApp;
 

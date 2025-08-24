@@ -1,5 +1,5 @@
 use auth_service_core::{
-    requests::{SignupEndpointRequest, TwoFactorAuthentication},
+    domain::TwoFactorAuthentication, requests::SignupEndpointRequest,
     responses::signup::SignupEndpointResponse,
 };
 

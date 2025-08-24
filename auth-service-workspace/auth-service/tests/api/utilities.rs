@@ -1,7 +1,10 @@
 use auth_service::{services::user_store::HashMapUserStore, Application};
-use auth_service_core::requests::{
-    LoginEndpointRequest, LogoutEndpointRequest, SignupEndpointRequest, ValidEmail, ValidPassword,
-    VerifyTokenEndpointRequest, VerifyTwoFactorAuthenticationEndpointRequest,
+use auth_service_core::{
+    domain::{ValidEmail, ValidPassword},
+    requests::{
+        LoginEndpointRequest, LogoutEndpointRequest, SignupEndpointRequest,
+        VerifyTokenEndpointRequest, VerifyTwoFactorAuthenticationEndpointRequest,
+    },
 };
 
 pub struct TestApp {

@@ -1,4 +1,4 @@
-use auth_service_core::requests::{LogoutEndpointRequest, Token};
+use auth_service_core::{domain::Token, requests::LogoutEndpointRequest};
 
 use crate::utilities::TestApp;
 

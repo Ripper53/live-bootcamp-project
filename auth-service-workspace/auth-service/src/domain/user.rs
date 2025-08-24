@@ -1,4 +1,4 @@
-use auth_service_core::requests::{TwoFactorAuthentication, ValidEmail, ValidPassword};
+use auth_service_core::domain::{TwoFactorAuthentication, ValidEmail, ValidPassword};
 
 #[derive(Debug)]
 pub struct User {

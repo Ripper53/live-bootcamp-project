@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use auth_service_core::requests::ValidEmail;
+use auth_service_core::domain::ValidEmail;
 
 use crate::domain::{
     data_stores::{UserStore, UserStoreAddUserError},

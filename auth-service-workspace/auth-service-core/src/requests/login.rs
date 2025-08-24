@@ -1,4 +1,4 @@
-use crate::requests::{UncheckedEmail, UncheckedPassword, ValidEmail, ValidPassword};
+use crate::domain::{UncheckedEmail, UncheckedPassword, ValidEmail, ValidPassword};
 
 #[derive(serde::Serialize, Debug)]
 pub struct LoginEndpointRequest {

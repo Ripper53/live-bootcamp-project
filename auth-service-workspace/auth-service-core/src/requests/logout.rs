@@ -1,4 +1,4 @@
-use crate::requests::Token;
+use crate::domain::Token;
 
 #[derive(serde::Serialize, Debug)]
 pub struct LogoutEndpointRequest {
