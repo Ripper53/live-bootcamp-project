@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
-use auth_service::{app_state::AppState, services::user_store::HashMapUserStore, Application};
+use auth_service::{
+    app_state::ConcreteAppState, services::user_store::HashMapUserStore, Application,
+};
 use auth_service_core::requests::{
     LoginEndpointRequest, LogoutEndpointRequest, SignupEndpointRequest, ValidEmail, ValidPassword,
     VerifyTokenEndpointRequest, VerifyTwoFactorAuthenticationEndpointRequest,
@@ -14,8 +16,8 @@ pub struct TestApp {
 
 impl TestApp {
     pub async fn new() -> Self {
-        let app = Application::build(
-            AppState::new(Arc::new(RwLock::new(Box::new(HashMapUserStore::default())))),
+        let app = Application::build_in_memory(
+            ConcreteAppState::new(Arc::new(RwLock::new(HashMapUserStore::default()))),
             "127.0.0.1:0",
         )
         .await

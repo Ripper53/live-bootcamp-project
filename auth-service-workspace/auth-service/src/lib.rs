@@ -1,7 +1,7 @@
 use axum::{routing::post, serve::Serve, Router};
 use tower_http::services::ServeDir;
 
-use crate::app_state::AppState;
+use crate::{app_state::ConcreteAppState, services::user_store::HashMapUserStore};
 
 pub mod app_state;
 pub mod domain;
@@ -10,15 +10,21 @@ pub mod services;
 
 // This struct encapsulates our application-related logic.
 pub struct Application {
-    server: Serve<Router, Router>,
+    server: Serve<tokio::net::TcpListener, Router, Router>,
     address: String,
 }
 
 impl Application {
-    pub async fn build(app_state: AppState, address: &str) -> Result<Self, ApplicationBuildError> {
+    pub async fn build_in_memory(
+        app_state: ConcreteAppState<HashMapUserStore>,
+        address: &str,
+    ) -> Result<Self, ApplicationBuildError> {
         let router = Router::new()
-            .nest_service("/", ServeDir::new("assets"))
-            .route("/signup", post(routes::signup))
+            .route_service("/", ServeDir::new("assets"))
+            .route(
+                "/signup",
+                post(routes::signup::<ConcreteAppState<HashMapUserStore>>),
+            )
             .route("/login", post(routes::login))
             .route("/logout", post(routes::logout))
             .route("/verify-2fa", post(routes::verify_2fa))

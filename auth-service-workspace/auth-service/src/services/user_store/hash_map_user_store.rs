@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use auth_service_core::requests::ValidEmail;
 
-use crate::{
-    domain::user::User,
-    services::user_store::{UserStore, UserStoreAddUserError},
+use crate::domain::{
+    data_stores::{UserStore, UserStoreAddUserError},
+    user::User,
 };
 
 #[derive(Default)]
@@ -13,7 +13,7 @@ pub struct HashMapUserStore {
 }
 
 impl UserStore for HashMapUserStore {
-    fn add_user(&mut self, user: User) -> Result<(), UserStoreAddUserError> {
+    async fn add_user(&mut self, user: User) -> Result<(), UserStoreAddUserError> {
         if self.users.contains_key(user.email()) {
             Err(UserStoreAddUserError::UserEmailAlreadyInUse(user))
         } else {

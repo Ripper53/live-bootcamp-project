@@ -1,12 +1,14 @@
 use std::sync::Arc;
 
-use auth_service::{app_state::AppState, services::user_store::HashMapUserStore, Application};
+use auth_service::{
+    app_state::ConcreteAppState, services::user_store::HashMapUserStore, Application,
+};
 use tokio::sync::RwLock;
 
 #[tokio::main]
 async fn main() {
-    let app = Application::build(
-        AppState::new(Arc::new(RwLock::new(Box::new(HashMapUserStore::default())))),
+    let app = Application::build_in_memory(
+        ConcreteAppState::new(Arc::new(RwLock::new(HashMapUserStore::default()))),
         "0.0.0.0:3000",
     )
     .await
