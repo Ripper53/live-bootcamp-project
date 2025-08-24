@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use auth_service_core::{
-    requests::{InvalidEmailError, SignupEndpointRequest},
+    requests::{InvalidEmailError, RequestValidation, SignupEndpointRequest},
     responses::signup::SignupEndpointResponse,
 };
 use axum::{
@@ -23,6 +23,17 @@ pub async fn signup(
     let (email, password, two_factor_authentication) = request.take_all();
     let email = match email.validate() {
         Ok(email) => email,
+        Err(e) => {
+            return (
+                StatusCode::BAD_REQUEST,
+                Json(SignupEndpointResponse {
+                    message: e.to_string(),
+                }),
+            );
+        }
+    };
+    let password = match password.validate() {
+        Ok(password) => password,
         Err(e) => {
             return (
                 StatusCode::BAD_REQUEST,

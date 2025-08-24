@@ -1,16 +1,16 @@
-use auth_service_core::requests::{Password, TwoFactorAuthentication, ValidEmail};
+use auth_service_core::requests::{TwoFactorAuthentication, ValidEmail, ValidPassword};
 
 #[derive(Debug)]
 pub struct User {
     email: ValidEmail,
-    password: Password,
+    password: ValidPassword,
     two_factor_authentication: TwoFactorAuthentication,
 }
 
 impl User {
     pub fn new(
         email: ValidEmail,
-        password: Password,
+        password: ValidPassword,
         two_factor_authentication: TwoFactorAuthentication,
     ) -> Self {
         User {

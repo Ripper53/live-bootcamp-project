@@ -12,10 +12,18 @@ pub use signup::*;
 pub use verify_2fa::*;
 pub use verify_token::*;
 
+pub trait RequestValidation {
+    type Valid;
+    type Error: std::error::Error;
+    fn validate(self) -> Result<Self::Valid, Self::Error>;
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct UncheckedEmail(String);
-impl UncheckedEmail {
-    pub fn validate(self) -> Result<ValidEmail, InvalidEmailError> {
+impl RequestValidation for UncheckedEmail {
+    type Valid = ValidEmail;
+    type Error = InvalidEmailError;
+    fn validate(self) -> Result<Self::Valid, Self::Error> {
         ValidEmail::try_new(self.0)
     }
 }
@@ -62,17 +70,46 @@ fn fmt_email(email: &str, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
-pub struct Password(String);
-impl Password {
+pub struct UncheckedPassword(String);
+impl UncheckedPassword {
     pub fn new(password: String) -> Self {
-        Password(password)
+        UncheckedPassword(password)
     }
 }
-impl std::fmt::Debug for Password {
+impl UncheckedPassword {
+    pub fn validate(self) -> Result<ValidPassword, InvalidPasswordError> {
+        ValidPassword::try_new(self.0)
+    }
+}
+impl std::fmt::Debug for UncheckedPassword {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Password(\"****\")")
+        write!(f, "UncheckedPassword(\"****\")")
     }
 }
+#[derive(serde::Serialize)]
+pub struct ValidPassword(String);
+impl ValidPassword {
+    pub fn try_new(password: String) -> Result<Self, InvalidPasswordError> {
+        if password.len() < 8 {
+            Err(InvalidPasswordError)
+        } else {
+            Ok(ValidPassword(password))
+        }
+    }
+}
+impl From<ValidPassword> for UncheckedPassword {
+    fn from(password: ValidPassword) -> Self {
+        UncheckedPassword(password.0)
+    }
+}
+impl std::fmt::Debug for ValidPassword {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "ValidPassword(\"****\")")
+    }
+}
+#[derive(thiserror::Error, Debug)]
+#[error("password is less than 8 characters")]
+pub struct InvalidPasswordError;
 
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct Token(String);

@@ -1,16 +1,16 @@
-use crate::requests::{Password, UncheckedEmail, ValidEmail};
+use crate::requests::{UncheckedEmail, UncheckedPassword, ValidEmail, ValidPassword};
 
 #[derive(serde::Serialize, Debug)]
 pub struct LoginEndpointRequest {
     email: UncheckedEmail,
-    password: Password,
+    password: UncheckedPassword,
 }
 
 impl LoginEndpointRequest {
-    pub fn new(email: ValidEmail, password: Password) -> Self {
+    pub fn new(email: ValidEmail, password: ValidPassword) -> Self {
         LoginEndpointRequest {
             email: email.into(),
-            password,
+            password: password.into(),
         }
     }
 }

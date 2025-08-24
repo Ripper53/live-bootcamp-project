@@ -43,7 +43,7 @@ async fn signup_returns_422_if_malformed_input() {
 }
 
 #[tokio::test]
-async fn signup_returns_400_if_invalid_input() {
+async fn signup_returns_400_if_invalid_email() {
     let app = TestApp::new().await;
     let response = app
         .post_request(
@@ -51,6 +51,22 @@ async fn signup_returns_400_if_invalid_input() {
             serde_json::json!({
                 "email": "invalid_email",
                 "password": "TEST_PASSWORD",
+                "2fa": true,
+            }),
+        )
+        .await;
+    assert_eq!(response.status().as_u16(), 400);
+}
+
+#[tokio::test]
+async fn signup_returns_400_if_invalid_password() {
+    let app = TestApp::new().await;
+    let response = app
+        .post_request(
+            "signup",
+            serde_json::json!({
+                "email": "email@email.com",
+                "password": "PASS",
                 "2fa": true,
             }),
         )
