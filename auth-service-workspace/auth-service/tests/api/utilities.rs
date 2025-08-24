@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use auth_service::{app_state::AppState, services::user_store::HashMapUserStore, Application};
 use auth_service_core::requests::{
-    Email, LoginEndpointRequest, LogoutEndpointRequest, Password, SignupEndpointRequest,
+    LoginEndpointRequest, LogoutEndpointRequest, Password, SignupEndpointRequest, ValidEmail,
     VerifyTokenEndpointRequest, VerifyTwoFactorAuthenticationEndpointRequest,
 };
 use tokio::sync::RwLock;
@@ -82,8 +82,8 @@ impl TestApp {
     }
 }
 
-pub fn get_random_email() -> Email {
-    Email::try_new(format!("{}@email.com", uuid::Uuid::new_v4())).unwrap()
+pub fn get_random_email() -> ValidEmail {
+    ValidEmail::try_new(format!("{}@email.com", uuid::Uuid::new_v4())).unwrap()
 }
 
 pub fn get_random_password() -> Password {

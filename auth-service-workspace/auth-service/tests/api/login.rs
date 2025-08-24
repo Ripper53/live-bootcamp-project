@@ -6,10 +6,10 @@ use crate::utilities::{get_random_email, get_random_password, TestApp};
 async fn login_returns_json() {
     let app = TestApp::new().await;
     let response = app
-        .login(LoginEndpointRequest {
-            email: get_random_email(),
-            password: get_random_password(),
-        })
+        .login(LoginEndpointRequest::new(
+            get_random_email(),
+            get_random_password(),
+        ))
         .await;
     assert_eq!(response.status().as_u16(), 200);
     /*assert_eq!(
