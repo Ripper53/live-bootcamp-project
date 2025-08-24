@@ -57,3 +57,38 @@ async fn signup_returns_400_if_invalid_input() {
         .await;
     assert_eq!(response.status().as_u16(), 400);
 }
+
+#[tokio::test]
+async fn signup_returns_409_if_already_signedup() {
+    let email = get_random_email();
+    let app = TestApp::new().await;
+    let response = app
+        .signup(SignupEndpointRequest::new(
+            email.clone(),
+            get_random_password(),
+            TwoFactorAuthentication::Disabled,
+        ))
+        .await;
+    assert_eq!(response.status().as_u16(), 201);
+    assert_eq!(
+        response.headers().get("content-type").unwrap(),
+        "application/json"
+    );
+    let response = app
+        .signup(SignupEndpointRequest::new(
+            email.clone(),
+            get_random_password(),
+            TwoFactorAuthentication::Disabled,
+        ))
+        .await;
+    assert_eq!(response.status().as_u16(), 409);
+    assert_eq!(
+        response.headers().get("content-type").unwrap(),
+        "application/json"
+    );
+    let response = response
+        .json::<SignupEndpointResponse>()
+        .await
+        .expect("Failed to deserialize response body to SignupEndpointResponse");
+    assert_eq!("email already in use", response.message);
+}
