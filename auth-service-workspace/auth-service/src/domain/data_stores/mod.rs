@@ -1,8 +1,12 @@
+use std::future::Future;
+
 use crate::domain::user::User;
 
-pub trait UserStore: Send + Sync {
-    #[allow(async_fn_in_trait)]
-    async fn add_user(&mut self, user: User) -> Result<(), UserStoreAddUserError>;
+pub trait UserStore: Send + Sync + 'static {
+    fn add_user(
+        &mut self,
+        user: User,
+    ) -> impl Future<Output = Result<(), UserStoreAddUserError>> + Send;
 }
 
 #[derive(thiserror::Error, Debug)]

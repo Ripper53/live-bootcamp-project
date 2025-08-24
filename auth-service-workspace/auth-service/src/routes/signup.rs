@@ -1,20 +1,20 @@
+use std::sync::Arc;
+
 use auth_service_core::{
     requests::{RequestValidation, SignupEndpointRequest},
     responses::signup::SignupEndpointResponse,
 };
 use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
+use tokio::sync::RwLock;
 
-use crate::{
-    app_state::AppState,
-    domain::{
-        data_stores::{UserStore, UserStoreAddUserError},
-        user::User,
-    },
+use crate::domain::{
+    data_stores::{UserStore, UserStoreAddUserError},
+    user::User,
 };
 
 //#[axum::debug_handler]
-pub async fn signup<S: AppState>(
-    State(mut state): State<S>,
+pub async fn signup<S: UserStore>(
+    State(user_store): State<Arc<RwLock<S>>>,
     Json(request): Json<SignupEndpointRequest>,
 ) -> impl IntoResponse {
     let (email, password, two_factor_authentication) = request.take_all();
@@ -41,8 +41,7 @@ pub async fn signup<S: AppState>(
         }
     };
     let user = User::new(email, password, two_factor_authentication);
-    let mut user_store = state.user_store_mut().await;
-    match user_store.add_user(user).await {
+    match user_store.write().await.add_user(user).await {
         Ok(()) => (
             StatusCode::CREATED,
             Json(SignupEndpointResponse {

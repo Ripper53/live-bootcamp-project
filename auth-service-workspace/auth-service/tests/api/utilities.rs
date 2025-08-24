@@ -1,13 +1,8 @@
-use std::sync::Arc;
-
-use auth_service::{
-    app_state::ConcreteAppState, services::user_store::HashMapUserStore, Application,
-};
+use auth_service::{services::user_store::HashMapUserStore, Application};
 use auth_service_core::requests::{
     LoginEndpointRequest, LogoutEndpointRequest, SignupEndpointRequest, ValidEmail, ValidPassword,
     VerifyTokenEndpointRequest, VerifyTwoFactorAuthenticationEndpointRequest,
 };
-use tokio::sync::RwLock;
 
 pub struct TestApp {
     pub address: String,
@@ -16,12 +11,9 @@ pub struct TestApp {
 
 impl TestApp {
     pub async fn new() -> Self {
-        let app = Application::build_in_memory(
-            ConcreteAppState::new(Arc::new(RwLock::new(HashMapUserStore::default()))),
-            "127.0.0.1:0",
-        )
-        .await
-        .expect("Failed to build app");
+        let app = Application::build(HashMapUserStore::default(), "127.0.0.1:0")
+            .await
+            .expect("Failed to build app");
 
         let address = format!("http://{}", app.address());
 
