@@ -25,7 +25,7 @@ pub async fn signup(
         Ok(email) => email,
         Err(e) => {
             return (
-                StatusCode::BAD_GATEWAY,
+                StatusCode::BAD_REQUEST,
                 Json(SignupEndpointResponse {
                     message: e.to_string(),
                 }),
