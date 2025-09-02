@@ -19,7 +19,7 @@ impl std::fmt::Debug for UncheckedPassword {
         write!(f, "UncheckedPassword(\"****\")")
     }
 }
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Clone, PartialEq, Eq)]
 pub struct ValidPassword(String);
 impl ValidPassword {
     pub fn try_new(password: String) -> Result<Self, InvalidPasswordError> {

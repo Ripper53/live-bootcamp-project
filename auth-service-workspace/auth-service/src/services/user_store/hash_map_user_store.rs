@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use auth_service_core::domain::ValidEmail;
+use auth_service_core::domain::{ValidEmail, ValidPassword};
 
 use crate::domain::{
     data_stores::{UserStore, UserStoreAddUserError},
@@ -19,6 +19,17 @@ impl UserStore for HashMapUserStore {
         } else {
             self.users.insert(user.email().clone(), user);
             Ok(())
+        }
+    }
+    async fn get_user(&self, email: ValidEmail, password: ValidPassword) -> Option<&User> {
+        if let Some(user) = self.users.get(&email) {
+            if password == *user.password() {
+                Some(user)
+            } else {
+                None
+            }
+        } else {
+            None
         }
     }
 }

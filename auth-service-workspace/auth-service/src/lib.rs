@@ -24,7 +24,7 @@ impl Application {
         let router = Router::new()
             .route_service("/", ServeDir::new("assets"))
             .route("/signup", post(routes::signup::<TUserStore>))
-            .route("/login", post(routes::login))
+            .route("/login", post(routes::login::<TUserStore>))
             .route("/logout", post(routes::logout))
             .route("/verify-2fa", post(routes::verify_2fa))
             .route("/verify-token", post(routes::verify_token))

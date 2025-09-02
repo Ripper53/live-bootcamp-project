@@ -12,7 +12,6 @@ use crate::domain::{
     user::User,
 };
 
-//#[axum::debug_handler]
 pub async fn signup<S: UserStore>(
     State(user_store): State<Arc<RwLock<S>>>,
     Json(request): Json<SignupEndpointRequest>,

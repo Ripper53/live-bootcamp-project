@@ -22,6 +22,9 @@ impl User {
     pub fn email(&self) -> &ValidEmail {
         &self.email
     }
+    pub fn password(&self) -> &ValidPassword {
+        &self.password
+    }
 }
 
 impl std::fmt::Display for User {
