@@ -56,8 +56,8 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push Docker image
-      working-directory: .
       uses: docker/build-push-action@v6
+      working-directory: .
       with:
         context: ./auth-service-workspace
         file: ./auth-service-workspace/Dockerfile
