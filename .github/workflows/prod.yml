@@ -55,17 +55,15 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push Docker images
-      uses: docker/bake-action@v2.3.0
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v6
       with:
+        context: ./auth-service-workspace
+        file: ./auth-service-workspace/Dockerfile
         push: true
-        files: |
-          compose.yml
-          compose.override.yml
-        set: |
-          *.cache-from=type=gha
-          *.cache-to=type=gha,mode=max
-          *.secret=id=jwt,src=${{ runner.temp }}/secrets/jwt
+        tags: esotericquietus/auth-service:latest
+        secrets: |
+          jwt_secret=${{ secrets.JWT_SECRET }}
 
   deploy:
     needs: build
