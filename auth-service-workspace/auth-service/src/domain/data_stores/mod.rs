@@ -11,8 +11,8 @@ pub trait UserStore: Send + Sync + 'static {
     ) -> impl Future<Output = Result<(), UserStoreAddUserError>> + Send;
     fn get_user(
         &self,
-        email: ValidEmail,
-        password: ValidPassword,
+        email: &ValidEmail,
+        password: &ValidPassword,
     ) -> impl Future<Output = Option<&User>> + Send;
 }
 

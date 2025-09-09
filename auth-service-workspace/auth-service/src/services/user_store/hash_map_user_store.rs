@@ -21,9 +21,9 @@ impl UserStore for HashMapUserStore {
             Ok(())
         }
     }
-    async fn get_user(&self, email: ValidEmail, password: ValidPassword) -> Option<&User> {
+    async fn get_user(&self, email: &ValidEmail, password: &ValidPassword) -> Option<&User> {
         if let Some(user) = self.users.get(&email) {
-            if password == *user.password() {
+            if *password == *user.password() {
                 Some(user)
             } else {
                 None

@@ -9,6 +9,7 @@ use crate::domain::data_stores::UserStore;
 pub mod domain;
 pub mod routes;
 pub mod services;
+pub mod utilities;
 
 // This struct encapsulates our application-related logic.
 pub struct Application {

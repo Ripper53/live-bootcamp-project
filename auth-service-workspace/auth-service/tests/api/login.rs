@@ -1,3 +1,4 @@
+use auth_service::utilities::constants::JWT_COOKIE_NAME;
 use auth_service_core::{
     domain::{TwoFactorAuthentication, ValidPassword},
     requests::{LoginEndpointRequest, SignupEndpointRequest},
@@ -21,6 +22,11 @@ async fn login_returns_200_if_correct_credentials() {
 
     let response = app.login(LoginEndpointRequest::new(email, password)).await;
     assert_eq!(response.status().as_u16(), 200);
+    let auth_cookie = response
+        .cookies()
+        .find(|cookie| cookie.name() == JWT_COOKIE_NAME)
+        .expect("no jwt auth token found");
+    assert!(!auth_cookie.value().is_empty());
     /*assert_eq!(
         response.headers().get("content-type").unwrap(),
         "application/json"
