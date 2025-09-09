@@ -34,7 +34,8 @@ jobs:
     - name: Build and test app-service code
       working-directory: ./app-service
       run: |
-        echo "${{ secrets.JWT_SECRET }}" >> /run/secrets/jwt
+        mkdir -p $RUNNER_TEMP/secrets
+        echo "${{ secrets.JWT_SECRET }}" >> $RUNNER_TEMP/secrets/jwt
         cargo build --verbose
         cargo test --verbose
 
@@ -64,6 +65,7 @@ jobs:
         set: |
           *.cache-from=type=gha
           *.cache-to=type=gha,mode=max
+          *.secret=id=jwt,src=${{ runner.temp }}/secrets/jwt
 
   deploy:
     needs: build
