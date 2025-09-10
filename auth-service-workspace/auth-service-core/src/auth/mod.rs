@@ -1,9 +1,17 @@
-use crate::domain::ValidEmail;
+use crate::{auth::constants::JWT_SECRET, domain::ValidEmail};
 
 pub mod constants;
 
-const TOKEN_TTL_SECONDS: i64 = 10;
-const TOKEN_SECRET: &str = "SECRET";
+const TOKEN_TTL_SECONDS: i64 = 600;
+
+pub fn validate_token(token: &str) -> Result<Claims, jsonwebtoken::errors::Error> {
+    jsonwebtoken::decode::<Claims>(
+        token,
+        &jsonwebtoken::DecodingKey::from_secret(JWT_SECRET.as_bytes()),
+        &jsonwebtoken::Validation::default(),
+    )
+    .map(|data| data.claims)
+}
 
 pub fn generate_jwt_token(email: &ValidEmail) -> Result<String, GenerateTokenError> {
     let delta = chrono::Duration::try_seconds(TOKEN_TTL_SECONDS).unwrap();
@@ -20,14 +28,20 @@ pub fn generate_jwt_token(email: &ValidEmail) -> Result<String, GenerateTokenErr
     jsonwebtoken::encode(
         &jsonwebtoken::Header::default(),
         &claims,
-        &jsonwebtoken::EncodingKey::from_secret(TOKEN_SECRET.as_bytes()),
+        &jsonwebtoken::EncodingKey::from_secret(JWT_SECRET.as_bytes()),
     )
     .map_err(GenerateTokenError::Encode)
 }
-#[derive(serde::Serialize)]
-struct Claims {
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct Claims {
     sub: String,
     exp: i64,
+}
+
+impl Claims {
+    pub fn email(self) -> ValidEmail {
+        ValidEmail::try_new(self.sub).unwrap()
+    }
 }
 
 #[derive(thiserror::Error, Debug)]

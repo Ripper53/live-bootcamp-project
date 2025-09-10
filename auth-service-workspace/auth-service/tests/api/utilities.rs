@@ -1,15 +1,19 @@
+use std::sync::Arc;
+
 use auth_service::{services::user_store::HashMapUserStore, Application};
 use auth_service_core::{
     domain::{ValidEmail, ValidPassword},
     requests::{
-        LoginEndpointRequest, LogoutEndpointRequest, SignupEndpointRequest,
-        VerifyTokenEndpointRequest, VerifyTwoFactorAuthenticationEndpointRequest,
+        LoginEndpointRequest, SignupEndpointRequest, VerifyTokenEndpointRequest,
+        VerifyTwoFactorAuthenticationEndpointRequest,
     },
 };
+use reqwest::cookie::Jar;
 
 pub struct TestApp {
     pub address: String,
     pub http_client: reqwest::Client,
+    pub cookie_jar: Arc<Jar>,
 }
 
 impl TestApp {
@@ -25,9 +29,14 @@ impl TestApp {
         #[allow(clippy::let_underscore_future)]
         let _ = tokio::spawn(app.run());
 
+        let cookie_jar = Arc::new(Jar::default());
         TestApp {
             address,
-            http_client: reqwest::Client::new(),
+            http_client: reqwest::Client::builder()
+                .cookie_provider(Arc::clone(&cookie_jar))
+                .build()
+                .unwrap(),
+            cookie_jar,
         }
     }
 
@@ -47,8 +56,8 @@ impl TestApp {
         self.post_request("login", request_data).await
     }
 
-    pub async fn logout(&self, request_data: LogoutEndpointRequest) -> reqwest::Response {
-        self.post_request("logout", request_data).await
+    pub async fn logout(&self) -> reqwest::Response {
+        self.post_request("logout", ()).await
     }
 
     pub async fn verify_2fa(

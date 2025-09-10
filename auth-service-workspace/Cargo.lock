@@ -46,8 +46,10 @@ dependencies = [
 name = "auth-service-core"
 version = "0.1.0"
 dependencies = [
+ "axum-core",
  "chrono",
  "email_address",
+ "http",
  "jsonwebtoken",
  "serde",
  "thiserror",
