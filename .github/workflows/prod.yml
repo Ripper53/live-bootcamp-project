@@ -55,6 +55,9 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: List contents of auth-service-workspace
+      run: ls -la ./auth-service-workspace
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
       with:
