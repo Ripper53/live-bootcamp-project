@@ -62,7 +62,7 @@ jobs:
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
-      arg:
+      args:
         RUNNER_TEMP: $RUNNER_TEMP
       with:
         file: ./auth-service-workspace/Dockerfile
