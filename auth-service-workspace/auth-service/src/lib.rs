@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{routing::post, serve::Serve, Router};
 use tokio::sync::RwLock;
-use tower_http::services::ServeDir;
+use tower_http::{cors::CorsLayer, services::ServeDir};
 
 use crate::domain::data_stores::UserStore;
 
@@ -22,6 +22,17 @@ impl Application {
         user_store: TUserStore,
         address: &str,
     ) -> Result<Self, ApplicationBuildError> {
+        let ALLOWED_ORIGINS = [
+            #[cfg(not(feature = "dev"))]
+            "http//localhost".parse(),
+            #[cfg(feature = "dev")]
+            "http//localhost:8000".parse(),
+        ];
+        let cors_layer = CorsLayer::new()
+            .allow_methods([reqwest::Method::GET, reqwest::Method::POST])
+            .allow_credentials(true)
+            .allow_origin(ALLOWED_ORIGINS);
+
         let router = Router::new()
             .route_service("/", ServeDir::new("assets"))
             .route("/signup", post(routes::signup::<TUserStore>))
@@ -29,7 +40,8 @@ impl Application {
             .route("/logout", post(routes::logout))
             .route("/verify-2fa", post(routes::verify_2fa))
             .route("/verify-token", post(routes::verify_token))
-            .with_state(Arc::new(RwLock::new(user_store)));
+            .with_state(Arc::new(RwLock::new(user_store)))
+            .layer(cors_layer);
 
         let listener = tokio::net::TcpListener::bind(address).await?;
         let address = listener.local_addr()?.to_string();
