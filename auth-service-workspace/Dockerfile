@@ -16,7 +16,7 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 # Build application
 COPY ./auth-service-workspace .
-RUN --mount=type=secret,id=jwt_secret sh -c 'JWT_SECRET=$(cat /run/secrets/jwt)'
+RUN --mount=type=secret,id=jwt_secret sh -c 'JWT_SECRET=$(cat /run/jwt_secret)'
 WORKDIR /app/auth-service-core
 RUN chmod +x define_constants.sh && ./define_constants.sh
 WORKDIR /app

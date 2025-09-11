@@ -34,8 +34,6 @@ jobs:
     - name: Build and test app-service code
       working-directory: ./app-service
       run: |
-        mkdir -p $RUNNER_TEMP/secrets
-        echo "${{ secrets.JWT_SECRET }}" >> $RUNNER_TEMP/secrets/jwt
         cargo build --verbose
         cargo test --verbose
 
