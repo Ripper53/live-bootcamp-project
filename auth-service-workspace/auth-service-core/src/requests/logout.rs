@@ -1,8 +1,6 @@
 use axum_core::response::IntoResponse;
 use http::StatusCode;
 
-use crate::domain::Token;
-
 #[derive(thiserror::Error, Debug)]
 pub enum LogoutEndpointError {
     #[error("token is missing")]
