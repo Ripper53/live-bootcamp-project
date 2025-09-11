@@ -65,6 +65,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
       with:
+        context: ./auth-service-workspace
         file: ./Dockerfile
         push: true
         tags: esotericquietus/auth-service:latest
