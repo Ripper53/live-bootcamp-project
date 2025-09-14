@@ -21,7 +21,7 @@ ARG RUNNER_TEMP
 RUN echo "$RUNNER_TEMP"
 RUN chmod +x define_constants.sh
 RUN --mount=type=secret,id=jwt_secret \
-    bash -c 'JWT_SECRET=$(cat $RUNNER_TEMP/jwt_secret) && ./define_constants.sh "$JWT_SECRET"'
+    sh -c 'JWT_SECRET=$(cat $RUNNER_TEMP/jwt_secret) && ./define_constants.sh "$JWT_SECRET"'
 WORKDIR /app
 RUN cargo build --release --bin auth-service
 
