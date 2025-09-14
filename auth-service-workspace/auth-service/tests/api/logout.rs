@@ -11,7 +11,8 @@ async fn logout_returns_200_if_valid_token() {
     app.cookie_jar.add_cookie_str(
         &format!(
             "{}={}; HttpOnly; SameSite=Lax; Secure; Path=/",
-            JWT_COOKIE_NAME, token,
+            JWT_COOKIE_NAME,
+            token.as_str(),
         ),
         &Url::parse("http://127.0.0.1").expect("failed to parse URL"),
     );
@@ -33,7 +34,8 @@ async fn logout_should_return_400_if_called_twice() {
     app.cookie_jar.add_cookie_str(
         &format!(
             "{}={}; HttpOnly; SameSite=Lax; Secure; Path=/",
-            JWT_COOKIE_NAME, token,
+            JWT_COOKIE_NAME,
+            token.as_str(),
         ),
         &Url::parse("http://127.0.0.1").expect("failed to parse URL"),
     );

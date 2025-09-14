@@ -1,4 +1,7 @@
-use crate::{auth::constants::JWT_SECRET, domain::ValidEmail};
+use crate::{
+    auth::constants::JWT_SECRET,
+    domain::{Token, ValidEmail},
+};
 
 pub mod constants;
 
@@ -13,7 +16,7 @@ pub fn validate_token(token: &str) -> Result<Claims, jsonwebtoken::errors::Error
     .map(|data| data.claims)
 }
 
-pub fn generate_jwt_token(email: &ValidEmail) -> Result<String, GenerateTokenError> {
+pub fn generate_jwt_token(email: &ValidEmail) -> Result<Token, GenerateTokenError> {
     let delta = chrono::Duration::try_seconds(TOKEN_TTL_SECONDS).unwrap();
 
     // Create JWT expiration time
@@ -25,12 +28,14 @@ pub fn generate_jwt_token(email: &ValidEmail) -> Result<String, GenerateTokenErr
     let sub = email.as_ref().to_owned();
 
     let claims = Claims { sub, exp };
-    jsonwebtoken::encode(
-        &jsonwebtoken::Header::default(),
-        &claims,
-        &jsonwebtoken::EncodingKey::from_secret(JWT_SECRET.as_bytes()),
-    )
-    .map_err(GenerateTokenError::Encode)
+    Ok(Token::new(
+        jsonwebtoken::encode(
+            &jsonwebtoken::Header::default(),
+            &claims,
+            &jsonwebtoken::EncodingKey::from_secret(JWT_SECRET.as_bytes()),
+        )
+        .map_err(GenerateTokenError::Encode)?,
+    ))
 }
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct Claims {

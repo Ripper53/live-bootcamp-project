@@ -1,6 +1,6 @@
 use crate::domain::Token;
 
-#[derive(serde::Serialize, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct VerifyTokenEndpointRequest {
     pub token: Token,
 }

@@ -2,7 +2,8 @@ use std::sync::Arc;
 
 use auth_service::{services::user_store::HashMapUserStore, Application};
 use auth_service_core::{
-    domain::{ValidEmail, ValidPassword},
+    auth::generate_jwt_token,
+    domain::{Token, ValidEmail, ValidPassword},
     requests::{
         LoginEndpointRequest, SignupEndpointRequest, VerifyTokenEndpointRequest,
         VerifyTwoFactorAuthenticationEndpointRequest,
@@ -94,4 +95,8 @@ pub fn get_random_email() -> ValidEmail {
 
 pub fn get_random_password() -> ValidPassword {
     ValidPassword::try_new(uuid::Uuid::new_v4().to_string()).unwrap()
+}
+
+pub fn get_valid_token() -> Token {
+    generate_jwt_token(&get_random_email()).unwrap()
 }

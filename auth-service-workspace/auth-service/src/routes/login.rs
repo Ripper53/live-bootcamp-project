@@ -37,7 +37,7 @@ pub async fn login<S: UserStore>(
         match generate_jwt_token(&email) {
             Ok(token) => {
                 let cookie_jar = cookie_jar.add(
-                    Cookie::build((JWT_COOKIE_NAME, token))
+                    Cookie::build((JWT_COOKIE_NAME, token.take_string()))
                         .path("/")
                         .http_only(true)
                         .same_site(axum_extra::extract::cookie::SameSite::Lax)
