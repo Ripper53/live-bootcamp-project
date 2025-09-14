@@ -17,12 +17,8 @@ RUN cargo chef cook --release --recipe-path recipe.json
 # Build application
 COPY ./auth-service-workspace .
 WORKDIR /app/auth-service-core
-ARG RUNNER_TEMP
-ENV RUNNER_TEMP=$RUNNER_TEMP
-RUN echo "RUNNER TEMP: $RUNNER_TEMP"
 RUN chmod +x define_constants.sh
-RUN --mount=type=secret,id=jwt_secret \
-    sh -c 'JWT_SECRET=$(cat $RUNNER_TEMP/jwt_secret) && ./define_constants.sh "$JWT_SECRET"'
+RUN JWT_SECRET=$(cat /run/secrets/jwt_secret) && ./define_constants.sh "$JWT_SECRET"
 WORKDIR /app
 RUN cargo build --release --bin auth-service
 

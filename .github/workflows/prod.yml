@@ -55,7 +55,7 @@ jobs:
 
     - name: Create JWT secret file
       run: |
-        echo "${{ secrets.JWT_SECRET }}" > $RUNNER_TEMP/jwt_secret
+        printf "${{ secrets.JWT_SECRET }}" | docker secret create jwt_secret -
 
     - name: List contents of auth-service-workspace
       run: ls -la ./auth-service-workspace
@@ -67,9 +67,7 @@ jobs:
         push: true
         tags: esotericquietus/auth-service:latest
         secrets: |
-          id=jwt_secret,src=$RUNNER_TEMP/jwt_secret
-        build-args: |
-          RUNNER_TEMP=${{ env.RUNNER_TEMP }}
+          id=jwt_secret
 
   deploy:
     needs: build
