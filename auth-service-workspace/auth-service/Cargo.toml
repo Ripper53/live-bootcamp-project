@@ -22,3 +22,8 @@ reqwest = { version = "0.12.23", default-features = false, features = [
     "json",
     "cookies",
 ] }
+
+[features]
+default = ["server"]
+server = []
+dev = []

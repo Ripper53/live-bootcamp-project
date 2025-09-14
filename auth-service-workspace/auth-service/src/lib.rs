@@ -11,7 +11,6 @@ pub mod routes;
 pub mod services;
 pub mod utilities;
 
-// This struct encapsulates our application-related logic.
 pub struct Application {
     server: Serve<tokio::net::TcpListener, Router, Router>,
     address: String,
@@ -22,16 +21,16 @@ impl Application {
         user_store: TUserStore,
         address: &str,
     ) -> Result<Self, ApplicationBuildError> {
-        let ALLOWED_ORIGINS = [
+        let allowed_origins = [
             #[cfg(not(feature = "dev"))]
-            "http//localhost".parse(),
+            "http://localhost".parse().unwrap(),
             #[cfg(feature = "dev")]
-            "http//localhost:8000".parse(),
+            "http://localhost".parse().unwrap(),
         ];
         let cors_layer = CorsLayer::new()
             .allow_methods([reqwest::Method::GET, reqwest::Method::POST])
             .allow_credentials(true)
-            .allow_origin(ALLOWED_ORIGINS);
+            .allow_origin(allowed_origins);
 
         let router = Router::new()
             .route_service("/", ServeDir::new("assets"))
