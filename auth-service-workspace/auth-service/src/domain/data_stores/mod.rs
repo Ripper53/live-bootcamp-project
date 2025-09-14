@@ -4,6 +4,9 @@ use auth_service_core::domain::{ValidEmail, ValidPassword};
 
 use crate::domain::user::User;
 
+mod banned_token_store;
+pub use banned_token_store::*;
+
 pub trait UserStore: Send + Sync + 'static {
     fn add_user(
         &mut self,

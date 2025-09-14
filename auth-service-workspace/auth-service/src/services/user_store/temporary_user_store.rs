@@ -8,11 +8,11 @@ use crate::domain::{
 };
 
 #[derive(Default)]
-pub struct HashMapUserStore {
+pub struct TemporaryUserStore {
     users: HashMap<ValidEmail, User>,
 }
 
-impl UserStore for HashMapUserStore {
+impl UserStore for TemporaryUserStore {
     async fn add_user(&mut self, user: User) -> Result<(), UserStoreAddUserError> {
         if self.users.contains_key(user.email()) {
             Err(UserStoreAddUserError::UserEmailAlreadyInUse(user))
@@ -22,7 +22,7 @@ impl UserStore for HashMapUserStore {
         }
     }
     async fn get_user(&self, email: &ValidEmail, password: &ValidPassword) -> Option<&User> {
-        if let Some(user) = self.users.get(&email) {
+        if let Some(user) = self.users.get(email) {
             if *password == *user.password() {
                 Some(user)
             } else {

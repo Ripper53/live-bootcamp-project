@@ -1,10 +1,4 @@
-mod hash_map_user_store;
-pub use hash_map_user_store::*;
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn add_user() {}
-}
+mod temporary_banned_token_store;
+mod temporary_user_store;
+pub use temporary_banned_token_store::*;
+pub use temporary_user_store::*;

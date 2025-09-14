@@ -1,4 +1,4 @@
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Hash, PartialEq, Eq)]
 pub struct Token(String);
 impl Token {
     pub fn new(token: String) -> Self {

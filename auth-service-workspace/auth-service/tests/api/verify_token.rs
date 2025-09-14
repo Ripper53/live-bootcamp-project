@@ -1,6 +1,7 @@
+use auth_service::domain::data_stores::BannedTokenStore;
 use auth_service_core::{domain::Token, requests::VerifyTokenEndpointRequest};
 
-use crate::utilities::{get_valid_token, TestApp};
+use crate::utilities::{TestApp, get_valid_token};
 
 #[tokio::test]
 async fn verify_token_returns_200_if_valid_token() {
@@ -21,6 +22,25 @@ async fn verify_token_returns_422_if_invalid_token() {
             token: Token::new("INVALID_TOKEN".into()),
         })
         .await;
+    assert_eq!(response.status().as_u16(), 401);
+}
+
+#[tokio::test]
+async fn verify_token_returns_422_if_banned_token() {
+    let app = TestApp::new().await;
+    let token = get_valid_token();
+    let response = app
+        .verify_token(VerifyTokenEndpointRequest {
+            token: token.clone(),
+        })
+        .await;
+    assert_eq!(response.status().as_u16(), 200);
+    app.banned_user_store
+        .write()
+        .await
+        .ban_token(token.clone())
+        .await;
+    let response = app.verify_token(VerifyTokenEndpointRequest { token }).await;
     assert_eq!(response.status().as_u16(), 401);
 }
 

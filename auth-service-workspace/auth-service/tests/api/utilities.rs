@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use auth_service::{services::user_store::HashMapUserStore, Application};
+use auth_service::{
+    Application,
+    services::user_store::{TemporaryBannedTokenStore, TemporaryUserStore},
+};
 use auth_service_core::{
     auth::generate_jwt_token,
     domain::{Token, ValidEmail, ValidPassword},
@@ -10,18 +13,25 @@ use auth_service_core::{
     },
 };
 use reqwest::cookie::Jar;
+use tokio::sync::RwLock;
 
 pub struct TestApp {
     pub address: String,
     pub http_client: reqwest::Client,
     pub cookie_jar: Arc<Jar>,
+    pub banned_user_store: Arc<RwLock<TemporaryBannedTokenStore>>,
 }
 
 impl TestApp {
     pub async fn new() -> Self {
-        let app = Application::build(HashMapUserStore::default(), "127.0.0.1:0")
-            .await
-            .expect("Failed to build app");
+        let banned_user_store = Arc::new(RwLock::new(TemporaryBannedTokenStore::default()));
+        let app = Application::build(
+            Arc::new(RwLock::new(TemporaryUserStore::default())),
+            Arc::clone(&banned_user_store),
+            "127.0.0.1:0",
+        )
+        .await
+        .expect("Failed to build app");
 
         let address = format!("http://{}", app.address());
 
@@ -38,12 +48,13 @@ impl TestApp {
                 .build()
                 .unwrap(),
             cookie_jar,
+            banned_user_store,
         }
     }
 
     pub async fn get_root(&self) -> reqwest::Response {
         self.http_client
-            .get(&format!("{}/", self.address))
+            .get(format!("{}/", self.address))
             .send()
             .await
             .expect("Failed to execute request.")
@@ -81,7 +92,7 @@ impl TestApp {
         request_data: T,
     ) -> reqwest::Response {
         self.http_client
-            .post(&format!("{}/{path}", self.address))
+            .post(format!("{}/{path}", self.address))
             .json(&request_data)
             .send()
             .await

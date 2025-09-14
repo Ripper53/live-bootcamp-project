@@ -1,5 +1,5 @@
-use auth_service::utilities::constants::JWT_COOKIE_NAME;
-use auth_service_core::{auth::generate_jwt_token, domain::Token};
+use auth_service::{domain::data_stores::BannedTokenStore, utilities::constants::JWT_COOKIE_NAME};
+use auth_service_core::auth::generate_jwt_token;
 use reqwest::Url;
 
 use crate::utilities::{get_random_email, TestApp};
@@ -18,6 +18,13 @@ async fn logout_returns_200_if_valid_token() {
     );
     let response = app.logout().await;
     assert_eq!(response.status().as_u16(), 200);
+    assert!(
+        app.banned_user_store
+            .read()
+            .await
+            .is_banned_token(&token)
+            .await
+    );
 }
 
 #[tokio::test]

@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use axum::{routing::post, serve::Serve, Router};
+use axum::{Router, routing::post, serve::Serve};
 use tokio::sync::RwLock;
 use tower_http::{cors::CorsLayer, services::ServeDir};
 
-use crate::domain::data_stores::UserStore;
+use crate::domain::data_stores::{BannedTokenStore, UserStore};
 
 pub mod domain;
 pub mod routes;
@@ -17,8 +17,9 @@ pub struct Application {
 }
 
 impl Application {
-    pub async fn build<TUserStore: UserStore>(
-        user_store: TUserStore,
+    pub async fn build<TUserStore: UserStore, TBannedTokenStore: BannedTokenStore>(
+        user_store: Arc<RwLock<TUserStore>>,
+        banned_token_store: Arc<RwLock<TBannedTokenStore>>,
         address: &str,
     ) -> Result<Self, ApplicationBuildError> {
         let allowed_origins = [
@@ -36,10 +37,14 @@ impl Application {
             .route_service("/", ServeDir::new("assets"))
             .route("/signup", post(routes::signup::<TUserStore>))
             .route("/login", post(routes::login::<TUserStore>))
-            .route("/logout", post(routes::logout))
             .route("/verify-2fa", post(routes::verify_2fa))
-            .route("/verify-token", post(routes::verify_token))
-            .with_state(Arc::new(RwLock::new(user_store)))
+            .with_state(user_store)
+            .route(
+                "/verify-token",
+                post(routes::verify_token::<TBannedTokenStore>),
+            )
+            .route("/logout", post(routes::logout::<TBannedTokenStore>))
+            .with_state(banned_token_store)
             .layer(cors_layer);
 
         let listener = tokio::net::TcpListener::bind(address).await?;
