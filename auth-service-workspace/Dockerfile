@@ -2,7 +2,7 @@
 FROM rust:1.89-alpine AS chef
 USER root
 # Add cargo-chef to cache dependencies
-RUN apk update; apk add --no-cache musl-dev && cargo install cargo-chef
+RUN apk update; apk add --no-cache musl-dev openssl-dev openssl-libs-static && cargo install cargo-chef
 WORKDIR /app
 
 FROM chef AS planner
