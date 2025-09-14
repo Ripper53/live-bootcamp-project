@@ -18,6 +18,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY ./auth-service-workspace .
 WORKDIR /app/auth-service-core
 ARG RUNNER_TEMP
+ENV RUNNER_TEMP=$RUNNER_TEMP
 RUN echo "RUNNER TEMP: $RUNNER_TEMP"
 RUN chmod +x define_constants.sh
 RUN --mount=type=secret,id=jwt_secret \
